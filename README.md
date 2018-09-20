@@ -12,4 +12,6 @@ Much of this code will be basic React
 
 Please feel free to clone this down for your own use!
 
+To run this app simply clone it down and fire npm start for a local server
+
 
