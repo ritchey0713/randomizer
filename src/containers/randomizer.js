@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 
+import Header from '../components/Header.js'
+
 class Randomizer extends Component {
   state = {
     options = []
   }
-  
-  //header component 
+  render(){
+    return (
+
+  <div>
+    <Header />
 
   // add option component 
 
@@ -18,7 +23,9 @@ class Randomizer extends Component {
   // pick component 
 
 
-
+</div>
+    )
+  }
   
 }
 
