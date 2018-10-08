@@ -1,50 +1,94 @@
-import React, { Component } from 'react'
+import React from 'react';
+import AddOption from './AddOption';
+import Action from './Action';
+import Header from './Header';
+import Options from './Options';
+import OptionModal from './OptionModal';
 
-import Header from '../components/Header.js'
-
-class Randomizer extends Component {
+ class Randomizer extends React.Component {
   state = {
-    options = []
+    options: [],
+    selectedOption: undefined
+  };
+  handleDeleteOptions = () => {
+    this.setState(() => ({ options: [] }));
+  };
+  handleClearSelectedOption = () => {
+    this.setState(() => ({ selectedOption: undefined }));
   }
-
-  handleAddOptionEvent = (option) => {
-    // option must be valid JS object
-    if (!option){
-      return "Enter valid option please!"
+  handleDeleteOption = (optionToRemove) => {
+    this.setState((prevState) => ({
+      options: prevState.options.filter((option) => optionToRemove !== option)
+    }));
+  };
+  handlePick = () => {
+    const randomNum = Math.floor(Math.random() * this.state.options.length);
+    const option = this.state.options[randomNum];
+    this.setState(() => ({
+      selectedOption: option
+    }));
+  };
+  handleAddOption = (option) => {
+    if (!option) {
+      return 'Enter valid value to add item';
+    } else if (this.state.options.indexOf(option) > -1) {
+      return 'This option already exists';
     }
-    //option test, if it has a index better than -1 it is already in array optionally
-    // could have called a built in function to test array this seemed to be a stronger way 
-    else if (this.state.options.indexOf(option) > -1){
-      return "This option already exists!"
-    }
 
-    //if it doesn't return before here it is a valid option and no need for else statement
-    this.setState((prevState) => {
-      ({options: prevState.options.concat([option])})
-    })
+    this.setState((prevState) => ({
+      options: prevState.options.concat(option)
+    }));
+  };
+  componentDidMount() {
+    try {
+      const json = localStorage.getItem('options');
+      const options = JSON.parse(json);
+
+      if (options) {
+        this.setState(() => ({ options }));
+      }
+    } catch (e) {
+      // Do nothing at all
+    }
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.options.length !== this.state.options.length) {
+      const json = JSON.stringify(this.state.options);
+      localStorage.setItem('options', json);
+    }
+  }
+  componentWillUnmount() {
+    console.log('componentWillUnmount');
+  }
+  render() {
+    const subtitle = 'Put your life in the hands of a computer';
 
-  render(){
     return (
-
-  <div>
-    <Header />
-
-  // add option component 
-
-  // show all options 
-
-  // single option with delete 
-
-  // modal component 
-
-  // pick component 
-
-
-</div>
-    )
+      <div>
+        <Header subtitle={subtitle} />
+        <div className="container">
+          <Action
+            hasOptions={this.state.options.length > 0}
+            handlePick={this.handlePick}
+          />
+          <div className="widget">
+            <Options
+              options={this.state.options}
+              handleDeleteOptions={this.handleDeleteOptions}
+              handleDeleteOption={this.handleDeleteOption}
+            />
+            <AddOption
+              handleAddOption={this.handleAddOption}
+            />
+          </div>
+        </div>
+        <OptionModal
+          selectedOption={this.state.selectedOption}
+          handleClearSelectedOption={this.handleClearSelectedOption}
+        />
+      </div>
+    );
   }
-  
 }
 
-export default Randomizer
+export default Randomizer 
